@@ -1,18 +1,17 @@
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 class Bogie {
-    private String name;
+    private String type;
     private int capacity;
 
-    public Bogie(String name, int capacity) {
-        this.name = name;
+    public Bogie(String type, int capacity) {
+        this.type = type;
         this.capacity = capacity;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
     public int getCapacity() {
@@ -21,30 +20,59 @@ class Bogie {
 
     @Override
     public String toString() {
-        return name + " (Capacity: " + capacity + ")";
+        return "Bogie{" +
+                "type='" + type + '\'' +
+                ", capacity=" + capacity +
+                '}';
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        // Step 1: Create a List of bogies
-        List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
-        bogies.add(new Bogie("First Class", 24));
+        List<Bogie> bogies = Arrays.asList(
+                new Bogie("Sleeper", 72),
+                new Bogie("Sleeper", 70),
+                new Bogie("AC Chair", 60),
+                new Bogie("First Class", 40),
+                new Bogie("Rectangular", 100),
+                new Bogie("Cylindrical", 80),
+                new Bogie("AC Chair", 55)
+        );
 
-        System.out.println("Original Bogie List:");
+        int totalSeats = bogies.stream()
+                .filter(b -> b.getType().equals("Sleeper") ||
+                        b.getType().equals("AC Chair") ||
+                        b.getType().equals("First Class"))
+                .map(Bogie::getCapacity)
+                .reduce(0, Integer::sum);
+
+        System.out.println("Total Seating Capacity of Train: " + totalSeats);
+
+        Map<String, List<Bogie>> groupedBogies = bogies.stream()
+                .collect(Collectors.groupingBy(Bogie::getType));
+
+        System.out.println("\nGrouped Bogies by Type:");
+        groupedBogies.forEach((type, bogieList) ->
+                System.out.println(type + " -> " + bogieList)
+        );
+
+        System.out.println("\nOriginal List remains unchanged:");
         bogies.forEach(System.out::println);
 
-
-        List<Bogie> filteredBogies = bogies.stream()
-                .filter(b -> b.getCapacity() > 60)
+        System.out.println("\nAfter Sorting by Capacity:");
+        List<Bogie> sortedBogies = bogies.stream()
+                .sorted(Comparator.comparingInt(Bogie::getCapacity))
                 .collect(Collectors.toList());
 
-        System.out.println("\nFiltered Bogies (Capacity > 60):");
-        filteredBogies.forEach(System.out::println);
+        sortedBogies.forEach(System.out::println);
 
-        System.out.println("\nOriginal List After Filtering (Unchanged):");
-        bogies.forEach(System.out::println);
+        LinkedHashSet<String> trainFormation = new LinkedHashSet<>();
+        trainFormation.add("Engine");
+        trainFormation.add("Sleeper");
+        trainFormation.add("Cargo");
+        trainFormation.add("Guard");
+        trainFormation.add("Sleeper");
+
+        System.out.println("\nFinal Train Formation: " + trainFormation);
     }
 }
